@@ -134,6 +134,8 @@ function App() {
       notificationTime,
     };
 
+    console.log(eventData, 'eventData...');
+
     const overlapping = findOverlappingEvents(eventData, events);
     if (overlapping.length > 0) {
       setOverlappingEvents(overlapping);
@@ -182,7 +184,7 @@ function App() {
                         (event) => new Date(event.date).toDateString() === date.toDateString()
                       )
                       .map((event) => {
-                        const isNotified = notifiedEvents.includes(event.id);
+                        const isNotified = notifiedEvents.includes(event.id as string);
                         return (
                           <Box
                             key={event.id}
@@ -269,7 +271,7 @@ function App() {
                               </Typography>
                             )}
                             {getEventsForDay(filteredEvents, day).map((event) => {
-                              const isNotified = notifiedEvents.includes(event.id);
+                              const isNotified = notifiedEvents.includes(event.id as string);
                               return (
                                 <Box
                                   key={event.id}
@@ -539,10 +541,12 @@ function App() {
                 <Stack direction="row" justifyContent="space-between">
                   <Stack>
                     <Stack direction="row" spacing={1} alignItems="center">
-                      {notifiedEvents.includes(event.id) && <Notifications color="error" />}
+                      {notifiedEvents.includes(event.id as string) && (
+                        <Notifications color="error" />
+                      )}
                       <Typography
-                        fontWeight={notifiedEvents.includes(event.id) ? 'bold' : 'normal'}
-                        color={notifiedEvents.includes(event.id) ? 'error' : 'inherit'}
+                        fontWeight={notifiedEvents.includes(event.id as string) ? 'bold' : 'normal'}
+                        color={notifiedEvents.includes(event.id as string) ? 'error' : 'inherit'}
                       >
                         {event.title}
                       </Typography>
@@ -578,7 +582,10 @@ function App() {
                     <IconButton aria-label="Edit event" onClick={() => editEvent(event)}>
                       <Edit />
                     </IconButton>
-                    <IconButton aria-label="Delete event" onClick={() => deleteEvent(event.id)}>
+                    <IconButton
+                      aria-label="Delete event"
+                      onClick={() => deleteEvent(event.id as string)}
+                    >
                       <Delete />
                     </IconButton>
                   </Stack>
