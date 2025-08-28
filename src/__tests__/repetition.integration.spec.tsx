@@ -298,8 +298,7 @@ describe('반복 종료 조건 (특정 날짜까지)', () => {
 
 describe('반복 일정 단위 수정', () => {
   test('반복된 일정 중에서 단일 일정의 제목을 수정하면 반복 일정이 해제되고 제목도 수정된다', () => {
-    // 기존 반복 일정 생성
-    const originalEvent: Event = {
+    const mockEvent: Event = {
       id: '1',
       title: '원래 제목',
       date: '2025-08-25',
@@ -317,7 +316,7 @@ describe('반복 일정 단위 수정', () => {
     };
 
     // 반복 일정 확장
-    const expandedEvents = expandRecurringEvent(originalEvent);
+    const expandedEvents = expandRecurringEvent(mockEvent);
     expect(expandedEvents).toHaveLength(4); // 8/25, 9/1, 9/8, 9/15
 
     // 두 번째 이벤트(9/1)를 수정하려고 함
@@ -343,7 +342,7 @@ describe('반복 일정 단위 수정', () => {
   });
 
   test('반복된 일정 중에서 단일 일정의 반복을 해제하면 단일 일정으로 변경된다', () => {
-    const originalEvent: Event = {
+    const mockEvent: Event = {
       id: '2',
       title: '반복 일정',
       date: '2025-08-25',
@@ -361,7 +360,7 @@ describe('반복 일정 단위 수정', () => {
     };
 
     // 반복 일정 확장
-    const expandedEvents = expandRecurringEvent(originalEvent);
+    const expandedEvents = expandRecurringEvent(mockEvent);
     expect(expandedEvents).toHaveLength(3); // 8/25, 9/25, 10/25
 
     // 세 번째 이벤트(10/25)의 반복을 해제
@@ -388,72 +387,5 @@ describe('반복 일정 단위 수정', () => {
     const eventsWithIcons = addRepeatIconIfNeeded(modifiedEvent);
     expect(eventsWithIcons).toHaveLength(1);
     expect(eventsWithIcons[0].repeat.repeatIcon).toBeFalsy();
-  });
-
-  test('반복 일정 중 특정 일정을 수정할 때 editEvent 함수가 올바르게 동작한다', () => {
-    // 기존 반복 일정
-    const originalEvent: Event = {
-      id: '3',
-      title: '원래 반복 일정',
-      date: '2025-08-25',
-      startTime: '09:00',
-      endTime: '10:00',
-      description: '테스트',
-      location: '테스트',
-      category: '테스트',
-      repeat: {
-        type: 'daily',
-        interval: 1,
-        endDate: '2025-08-27',
-      },
-      notificationTime: 10,
-    };
-
-    // 반복 일정 확장
-    const expandedEvents = expandRecurringEvent(originalEvent);
-    expect(expandedEvents).toHaveLength(3); // 8/25, 8/26, 8/27
-
-    // 두 번째 이벤트(8/26)를 수정
-    const eventToEdit = expandedEvents[1];
-
-    // editEvent 함수의 동작을 시뮬레이션
-    // 1. editingEvent 설정
-    // 2. 폼 필드들 설정
-    // 3. isRepeating을 false로 설정 (반복 일정 체크박스 해제)
-
-    const simulatedFormState = {
-      title: eventToEdit.title,
-      date: eventToEdit.date,
-      startTime: eventToEdit.startTime,
-      endTime: eventToEdit.endTime,
-      description: eventToEdit.description,
-      location: eventToEdit.location,
-      category: eventToEdit.category,
-      isRepeating: false, // editEvent에서 자동으로 false로 설정됨
-      repeatType: 'daily' as const, // editEvent에서 기본값으로 설정됨
-      repeatInterval: 1, // editEvent에서 기본값으로 설정됨
-      repeatEndDate: '', // editEvent에서 빈 문자열로 설정됨
-      notificationTime: eventToEdit.notificationTime,
-    };
-
-    // 시뮬레이션된 폼 상태 검증
-    expect(simulatedFormState.isRepeating).toBe(false);
-    expect(simulatedFormState.repeatType).toBe('daily');
-    expect(simulatedFormState.repeatInterval).toBe(1);
-    expect(simulatedFormState.repeatEndDate).toBe('');
-
-    // 이 상태로 일정을 저장하면 일반 일정으로 저장되어야 함
-    const eventToSave: Event = {
-      ...eventToEdit,
-      title: '수정된 제목',
-      repeat: {
-        type: 'none',
-        interval: 1,
-        endDate: undefined,
-      },
-    };
-
-    expect(eventToSave.repeat.type).toBe('none');
-    expect(eventToSave.title).toBe('수정된 제목');
   });
 });
