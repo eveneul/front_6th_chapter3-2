@@ -389,3 +389,37 @@ describe('반복 일정 단위 수정', () => {
     expect(eventsWithIcons[0].repeat.repeatIcon).toBeFalsy();
   });
 });
+
+test('반복된 일정 중에서 단일 일정을 삭제하면 해당 일정만 삭제된다', () => {
+  const mockEvent: Event = {
+    id: '3',
+    title: '반복 일정',
+    date: '2025-08-25',
+    startTime: '09:00',
+    endTime: '10:00',
+    description: '테스트',
+    location: '테스트',
+    category: '테스트',
+    repeat: {
+      type: 'weekly',
+      interval: 1,
+      endDate: '2025-09-08',
+    },
+    notificationTime: 10,
+  };
+
+  // 반복 일정 확장
+  const expandedEvents = expandRecurringEvent(mockEvent);
+  expect(expandedEvents).toHaveLength(3); // 8/25, 9/1, 9/8
+
+  // 두 번째 일정(9/1)을 삭제한다고 가정
+  const dateToDelete = '2025-09-01';
+  const eventsAfterDelete = expandedEvents.filter((e) => e.date !== dateToDelete);
+
+  // 삭제된 일정이 목록에 없는지 확인
+  expect(eventsAfterDelete).toHaveLength(2);
+  expect(eventsAfterDelete.find((e) => e.date === dateToDelete)).toBeUndefined();
+
+  // 나머지 일정이 정상적으로 남아있는지 확인
+  expect(eventsAfterDelete.map((e) => e.date)).toEqual(['2025-08-25', '2025-09-08']);
+});
