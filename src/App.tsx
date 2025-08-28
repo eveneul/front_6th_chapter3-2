@@ -132,7 +132,7 @@ function App() {
     }
 
     const eventData: Event | EventForm = {
-      id: editingEvent ? editingEvent.id : undefined,
+      id: editingEvent?.id,
       title,
       date,
       startTime,
@@ -160,6 +160,11 @@ function App() {
         const eventsWithIcons = addRepeatIconIfNeeded(eventData);
         console.log('Events with icons:', eventsWithIcons);
 
+        // 편집 모드인 경우 기존 일정 삭제
+        if (editingEvent) {
+          await deleteEvent(editingEvent.id as string);
+        }
+
         // 각 확장된 이벤트를 개별적으로 저장
         for (const expandedEvent of eventsWithIcons) {
           const overlapping = findOverlappingEvents(expandedEvent, events);
@@ -168,10 +173,14 @@ function App() {
             setIsOverlapDialogOpen(true);
             return;
           }
+
           await saveEvent(expandedEvent);
         }
         resetForm();
-        enqueueSnackbar('반복 일정이 추가되었습니다.', { variant: 'success' });
+        enqueueSnackbar(
+          editingEvent ? '반복 일정이 수정되었습니다.' : '반복 일정이 추가되었습니다.',
+          { variant: 'success' }
+        );
         return;
       } catch (error) {
         console.error('Error expanding recurring event:', error);
@@ -188,6 +197,9 @@ function App() {
     } else {
       await saveEvent(eventData);
       resetForm();
+      enqueueSnackbar(editingEvent ? '일정이 수정되었습니다.' : '일정이 추가되었습니다.', {
+        variant: 'success',
+      });
     }
   };
 
