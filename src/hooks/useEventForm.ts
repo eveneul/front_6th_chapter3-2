@@ -62,10 +62,12 @@ export const useEventForm = (initialEvent?: Event) => {
     setDescription(event.description);
     setLocation(event.location);
     setCategory(event.category);
-    setIsRepeating(event.repeat.type !== 'none');
-    setRepeatType(event.repeat.type === 'none' ? 'daily' : event.repeat.type);
-    setRepeatInterval(event.repeat.interval);
-    setRepeatEndDate(event.repeat.endDate || '');
+
+    setIsRepeating(false);
+    setRepeatType('daily');
+    setRepeatInterval(1);
+    setRepeatEndDate('');
+
     setNotificationTime(event.notificationTime);
   };
 

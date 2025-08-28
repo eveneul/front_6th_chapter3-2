@@ -189,7 +189,7 @@ function App() {
       }
     }
 
-    // 일반 일정인 경우 기존 로직 사용
+    // 일반 일정인 경우 (반복 일정 체크박스가 해제된 경우 포함)
     const overlapping = findOverlappingEvents(eventData, events);
     if (overlapping.length > 0) {
       setOverlappingEvents(overlapping);
