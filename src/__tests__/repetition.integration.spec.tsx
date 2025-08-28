@@ -76,11 +76,11 @@ describe('반복 유형 선택', () => {
   });
 
   describe('사용자가 반복 유형을 매월로 설정한다', () => {
-    test('2025-08-01 09:00에 시작하는 일정에서 2025-11월까지 매월 반복 설정 시 해당 기간 동안 매월 이벤트가 생성된다', () => {
+    test('2025-01-31 09:00에 시작하는 일정에서 2025-12월까지 매월 반복 설정 시 해당 기간 동안 매월 이벤트가 생성된다', () => {
       const mockEvent: Event = {
         id: undefined,
         title: '양꼬치 먹는 날',
-        date: '2025-08-01',
+        date: '2025-01-31',
         startTime: '09:00',
         endTime: '10:00',
         description: '양꼬치 맛있겠다',
@@ -89,19 +89,26 @@ describe('반복 유형 선택', () => {
         repeat: {
           type: 'monthly',
           interval: 1,
-          endDate: '2025-11-01',
+          endDate: '2025-12-31',
         },
         notificationTime: 10,
       };
 
       const result = generateRepeatEvents(mockEvent);
 
-      // 8월, 9월, 10월, 11월 -> 3개
       console.log(result);
-      expect(result).toHaveLength(4);
+      expect(result).toHaveLength(7);
 
       // 반복 날짜들
-      const expectedDates = ['2025-08-01', '2025-09-01', '2025-10-01', '2025-11-01'];
+      const expectedDates = [
+        '2025-01-31',
+        '2025-03-31',
+        '2025-05-31',
+        '2025-07-31',
+        '2025-08-31',
+        '2025-10-31',
+        '2025-12-31',
+      ];
 
       expectedDates.forEach((date, index) => {
         expect(result[index].date).toBe(date);
@@ -135,6 +142,40 @@ describe('반복 유형 선택', () => {
 
       // 반복 날짜들
       const expectedDates = ['2025-08-25', '2026-08-25', '2027-08-25'];
+
+      expectedDates.forEach((date, index) => {
+        expect(result[index].date).toBe(date);
+      });
+    });
+  });
+
+  describe('사용자가 반복 유형을 윤년으로 설정한다', () => {
+    test('2024-02-29 09:00에 시작하는 일정에서 2028년까지 매년 반복 설정 시 윤년 2월 29일에 이벤트가 생성된다', () => {
+      const mockEvent: Event = {
+        id: undefined,
+        title: '양꼬치 먹는 날',
+        date: '2024-02-29',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '양꼬치 맛있겠다',
+        location: '합정역',
+        category: '개인',
+        repeat: {
+          type: 'yearly',
+          interval: 1,
+          endDate: '2029-02-28',
+        },
+        notificationTime: 10,
+      };
+
+      const result = generateRepeatEvents(mockEvent);
+
+      // 24년, 28년 -> 2개
+      console.log(result);
+      expect(result).toHaveLength(2);
+
+      // 반복 날짜들
+      const expectedDates = ['2024-02-29', '2028-02-29'];
 
       expectedDates.forEach((date, index) => {
         expect(result[index].date).toBe(date);

@@ -21,6 +21,15 @@ export const generateRepeatEvents = (mockEvent: Event) => {
   let currentDate = new Date(startDate);
 
   while (currentDate <= endDate) {
+    // 윤년 체크 -> 2/29 시작일은 비윤년을 건너뛰되, 기준 날짜를 항상 2/29로 유지
+    if (repeatType === 'yearly' && startDate.getMonth() === 1 && startDate.getDate() === 29) {
+      if (!isLeapYear(currentDate.getFullYear())) {
+        const nextYear = currentDate.getFullYear() + interval;
+        currentDate = new Date(nextYear, 1, 29);
+        continue;
+      }
+    }
+
     const eventDate = currentDate.toISOString().split('T')[0]; // 2025-08-25 형태로 변환
 
     events.push({
@@ -61,20 +70,17 @@ export const generateRepeatEvents = (mockEvent: Event) => {
         currentDate = newDate;
         break;
       }
-
       case 'yearly': {
-        // 매년 반복은 같은 달, 같은 날이 반복되어야 하기 때문에 month, day를 구함
         const originalMonth = startDate.getMonth();
         const originalDay = startDate.getDate();
 
-        const newDate = new Date(currentDate);
-        newDate.setFullYear(currentDate.getFullYear() + interval);
-        newDate.setMonth(originalMonth);
-        newDate.setDate(originalDay);
+        const newYear = currentDate.getFullYear() + interval;
+        let newDate = new Date(newYear, originalMonth, originalDay);
 
+        // 2/29 반복: 다음 해가 비윤년이면 2/29로 유지한 채 스킵
         if (originalMonth === 1 && originalDay === 29) {
-          if (!isLeapYear(newDate.getFullYear())) {
-            currentDate = newDate;
+          if (!isLeapYear(newYear)) {
+            currentDate = new Date(newYear, 1, 29);
             continue;
           }
         }
