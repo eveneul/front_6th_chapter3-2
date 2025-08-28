@@ -46,6 +46,9 @@ import {
 } from './utils/dateUtils';
 import { findOverlappingEvents } from './utils/eventOverlap';
 import { getTimeErrorMessage } from './utils/timeValidation';
+import { expandRecurringEvent } from './utils/expandRecurringEvent';
+import { addRepeatIconIfNeeded } from './utils/addRepeatIconIfNeeded';
+import { RepeatIcon } from './components/RepeatIcon';
 
 const categories = ['업무', '개인', '가족', '기타'];
 
@@ -147,6 +150,37 @@ function App() {
 
     console.log(eventData, 'eventData...');
 
+    // 반복 일정인 경우 확장된 이벤트들을 생성
+    if (isRepeating && repeatType !== 'none') {
+      try {
+        const expandedEvents = expandRecurringEvent(eventData);
+        console.log('Expanded events:', expandedEvents);
+
+        // addRepeatIconIfNeeded를 사용하여 반복 아이콘과 체크박스 추가
+        const eventsWithIcons = addRepeatIconIfNeeded(eventData);
+        console.log('Events with icons:', eventsWithIcons);
+
+        // 각 확장된 이벤트를 개별적으로 저장
+        for (const expandedEvent of eventsWithIcons) {
+          const overlapping = findOverlappingEvents(expandedEvent, events);
+          if (overlapping.length > 0) {
+            setOverlappingEvents(overlapping);
+            setIsOverlapDialogOpen(true);
+            return;
+          }
+          await saveEvent(expandedEvent);
+        }
+        resetForm();
+        enqueueSnackbar('반복 일정이 추가되었습니다.', { variant: 'success' });
+        return;
+      } catch (error) {
+        console.error('Error expanding recurring event:', error);
+        enqueueSnackbar('반복 일정 생성 중 오류가 발생했습니다.', { variant: 'error' });
+        return;
+      }
+    }
+
+    // 일반 일정인 경우 기존 로직 사용
     const overlapping = findOverlappingEvents(eventData, events);
     if (overlapping.length > 0) {
       setOverlappingEvents(overlapping);
@@ -300,6 +334,9 @@ function App() {
                                 >
                                   <Stack direction="row" spacing={1} alignItems="center">
                                     {isNotified && <Notifications fontSize="small" />}
+                                    {event.repeat?.type && event.repeat.type !== 'none' && (
+                                      <RepeatIcon size={12} color="#666" />
+                                    )}
                                     <Typography
                                       variant="caption"
                                       noWrap
@@ -554,6 +591,9 @@ function App() {
                     <Stack direction="row" spacing={1} alignItems="center">
                       {notifiedEvents.includes(event.id as string) && (
                         <Notifications color="error" />
+                      )}
+                      {event.repeat?.type && event.repeat.type !== 'none' && (
+                        <RepeatIcon size={14} color="#666" />
                       )}
                       <Typography
                         fontWeight={notifiedEvents.includes(event.id as string) ? 'bold' : 'normal'}

@@ -47,7 +47,7 @@ export const useEventForm = (initialEvent?: Event) => {
     setLocation('');
     setCategory('업무');
     setIsRepeating(false);
-    setRepeatType('none');
+    setRepeatType('daily');
     setRepeatInterval(1);
     setRepeatEndDate('');
     setNotificationTime(10);
@@ -63,7 +63,7 @@ export const useEventForm = (initialEvent?: Event) => {
     setLocation(event.location);
     setCategory(event.category);
     setIsRepeating(event.repeat.type !== 'none');
-    setRepeatType(event.repeat.type);
+    setRepeatType(event.repeat.type === 'none' ? 'daily' : event.repeat.type);
     setRepeatInterval(event.repeat.interval);
     setRepeatEndDate(event.repeat.endDate || '');
     setNotificationTime(event.notificationTime);
