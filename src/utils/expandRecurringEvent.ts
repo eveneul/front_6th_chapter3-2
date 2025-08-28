@@ -13,9 +13,15 @@ export const expandRecurringEvent = (mockEvent: Event) => {
     return [mockEvent];
   }
 
-  const events = [] as Event[];
-  const startDate = new Date(mockEvent.date); // Mon Aug 25 2025.. 이런 형태로 나옴
+  const startDate = new Date(mockEvent.date);
   const endDate = new Date(mockEvent.repeat.endDate);
+
+  // 종료일이 시작일 이후여야 함
+  if (startDate >= endDate) {
+    return [mockEvent]; // 유효하지 않은 경우 원본 이벤트만 반환
+  }
+
+  const events = [] as Event[];
   const interval = mockEvent.repeat.interval || 1;
 
   let currentDate = new Date(startDate);

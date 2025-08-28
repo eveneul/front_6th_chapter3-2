@@ -238,3 +238,60 @@ describe('캘린더 뷰에서 반복 일정 아이콘을 넣어 구분하여 표
     });
   });
 });
+
+describe('반복 종료 조건 (특정 날짜까지)', () => {
+  test('유효한 반복 종료일 지정 시 해당 날짜까지 반복된다', () => {
+    const mockEvent: Event = {
+      id: undefined,
+      title: '양꼬치 먹는 날',
+      date: '2025-08-25',
+      startTime: '09:00',
+      endTime: '10:00',
+      description: '양꼬치 맛있겠다',
+      location: '합정역',
+      category: '개인',
+      repeat: {
+        type: 'weekly',
+        interval: 1,
+        endDate: '2025-09-10',
+      },
+      notificationTime: 10,
+    };
+
+    const result = expandRecurringEvent(mockEvent);
+
+    // 8/25, 9/01, 9/09 -> 3개
+    expect(result).toHaveLength(3);
+
+    // 반복 날짜들
+    const expectedDates = ['2025-08-25', '2025-09-01', '2025-09-08'];
+
+    expectedDates.forEach((date, index) => {
+      expect(result[index].date).toBe(date);
+    });
+  });
+
+  test('유효한 반복 종료일 지정 시 해당 날짜까지 반복된다', () => {
+    const mockEvent: Event = {
+      id: undefined,
+      title: '양꼬치 먹는 날',
+      date: '2025-09-01',
+      startTime: '09:00',
+      endTime: '10:00',
+      description: '양꼬치 맛있겠다',
+      location: '합정역',
+      category: '개인',
+      repeat: {
+        type: 'weekly',
+        interval: 1,
+        endDate: '2025-08-25',
+      },
+      notificationTime: 10,
+    };
+
+    const result = expandRecurringEvent(mockEvent);
+    console.log(result);
+
+    expect(result).toHaveLength(1);
+  });
+});

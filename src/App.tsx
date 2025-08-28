@@ -117,6 +117,17 @@ function App() {
       return;
     }
 
+    // 반복 일정인 경우 종료일 유효성 검사
+    if (isRepeating && repeatEndDate) {
+      const startDate = new Date(date);
+      const endDate = new Date(repeatEndDate);
+
+      if (startDate >= endDate) {
+        enqueueSnackbar('종료일은 시작일 이후여야 합니다.', { variant: 'error' });
+        return;
+      }
+    }
+
     const eventData: Event | EventForm = {
       id: editingEvent ? editingEvent.id : undefined,
       title,
