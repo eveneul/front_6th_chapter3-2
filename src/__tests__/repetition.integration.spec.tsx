@@ -1,5 +1,6 @@
 import { Event } from '../types';
-import { generateRepeatEvents } from '../utils/generateRepeatEvents';
+import { addRepeatIconIfNeeded } from '../utils/addRepeatIconIfNeeded';
+import { expandRecurringEvent } from '../utils/expandRecurringEvent';
 
 describe('반복 유형 선택', () => {
   describe('사용자가 반복 유형을 매일로 설정한다', () => {
@@ -21,7 +22,7 @@ describe('반복 유형 선택', () => {
         notificationTime: 10,
       };
 
-      const result = generateRepeatEvents(mockEvent);
+      const result = expandRecurringEvent(mockEvent);
 
       // 8/25, 8/26, 8/27, 8/28, 8/29, 8/30 -> 6개
       expect(result).toHaveLength(6);
@@ -61,7 +62,7 @@ describe('반복 유형 선택', () => {
         notificationTime: 10,
       };
 
-      const result = generateRepeatEvents(mockEvent);
+      const result = expandRecurringEvent(mockEvent);
 
       // 8/25, 9/01, 9/09 -> 3개
       expect(result).toHaveLength(3);
@@ -94,7 +95,7 @@ describe('반복 유형 선택', () => {
         notificationTime: 10,
       };
 
-      const result = generateRepeatEvents(mockEvent);
+      const result = expandRecurringEvent(mockEvent);
 
       console.log(result);
       expect(result).toHaveLength(7);
@@ -135,7 +136,7 @@ describe('반복 유형 선택', () => {
         notificationTime: 10,
       };
 
-      const result = generateRepeatEvents(mockEvent);
+      const result = expandRecurringEvent(mockEvent);
 
       // 25년, 26년, 27년 -> 3개
       expect(result).toHaveLength(3);
@@ -168,7 +169,7 @@ describe('반복 유형 선택', () => {
         notificationTime: 10,
       };
 
-      const result = generateRepeatEvents(mockEvent);
+      const result = expandRecurringEvent(mockEvent);
 
       // 24년, 28년 -> 2개
       console.log(result);
@@ -180,6 +181,60 @@ describe('반복 유형 선택', () => {
       expectedDates.forEach((date, index) => {
         expect(result[index].date).toBe(date);
       });
+    });
+  });
+});
+
+describe('캘린더 뷰에서 반복 일정 아이콘을 넣어 구분하여 표시한다.', () => {
+  describe('반복 일정이 없는 일정은 반복 아이콘이 없다.', () => {
+    test('반복 일정이 없는 일정은 반복 아이콘이 없다.', () => {
+      const mockEvent: Event = {
+        id: undefined,
+        title: '양꼬치 먹는 날',
+        date: '2025-08-28',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '양꼬치 맛있겠다',
+        location: '합정역',
+        category: '개인',
+        repeat: {
+          type: 'none',
+          interval: 1,
+          endDate: '2025-08-28',
+        },
+        notificationTime: 10,
+      };
+
+      const result = addRepeatIconIfNeeded(mockEvent);
+      console.log(result);
+
+      expect(result[0].repeat.repeatIcon).toBeFalsy();
+    });
+  });
+
+  describe('반복 일정이 있는 일정은 반복 아이콘이 있다.', () => {
+    test('반복 일정이 있는 일정은 반복 아이콘이 있다.', () => {
+      const mockEvent: Event = {
+        id: undefined,
+        title: '양꼬치 먹는 날',
+        date: '2025-08-25',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '양꼬치 맛있겠다',
+        location: '합정역',
+        category: '개인',
+        repeat: {
+          type: 'daily',
+          interval: 1,
+          endDate: '2025-08-31',
+        },
+        notificationTime: 10,
+      };
+      const result = addRepeatIconIfNeeded(mockEvent);
+
+      expect(result).toHaveLength(7);
+      expect(result[0].repeat?.repeatIcon).toBe(true);
+      expect(result.every((e) => e.repeat?.repeatIcon)).toBe(true);
     });
   });
 });

@@ -1,6 +1,6 @@
 import { Event } from '../types';
 
-export const generateRepeatEvents = (mockEvent: Event) => {
+export const expandRecurringEvent = (mockEvent: Event) => {
   const repeatType = mockEvent.repeat?.type;
 
   // 반복 일정이 아니라면 원본 이벤트만 반환
