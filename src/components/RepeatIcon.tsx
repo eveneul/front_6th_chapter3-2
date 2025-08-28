@@ -3,11 +3,17 @@ import React from 'react';
 interface RepeatIconProps {
   size?: number;
   color?: string;
+  'data-testid'?: string;
 }
 
-export const RepeatIcon: React.FC<RepeatIconProps> = ({ size = 16, color = 'currentColor' }) => {
+export const RepeatIcon: React.FC<RepeatIconProps> = ({
+  size = 16,
+  color = 'currentColor',
+  'data-testid': dataTestId,
+}) => {
   return (
     <svg
+      data-testid={dataTestId}
       width={size}
       height={size}
       viewBox="0 0 24 24"

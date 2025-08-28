@@ -354,7 +354,11 @@ function App() {
                                   <Stack direction="row" spacing={1} alignItems="center">
                                     {isNotified && <Notifications fontSize="small" />}
                                     {event.repeat?.type && event.repeat.type !== 'none' && (
-                                      <RepeatIcon size={12} color="#666" />
+                                      <RepeatIcon
+                                        data-testid="repeat-icon"
+                                        size={12}
+                                        color="#666"
+                                      />
                                     )}
                                     <Typography
                                       variant="caption"
@@ -482,6 +486,7 @@ function App() {
               control={
                 <Checkbox
                   checked={isRepeating}
+                  data-testid="repeat-type-select"
                   onChange={(e) => setIsRepeating(e.target.checked)}
                 />
               }
@@ -511,20 +516,30 @@ function App() {
               <FormControl fullWidth>
                 <FormLabel>반복 유형</FormLabel>
                 <Select
+                  data-testid="repeat-type-select"
                   size="small"
                   value={repeatType}
                   onChange={(e) => setRepeatType(e.target.value as RepeatType)}
                 >
-                  <MenuItem value="daily">매일</MenuItem>
-                  <MenuItem value="weekly">매주</MenuItem>
-                  <MenuItem value="monthly">매월</MenuItem>
-                  <MenuItem value="yearly">매년</MenuItem>
+                  <MenuItem data-testid="repeat-type-daily" value="daily">
+                    매일
+                  </MenuItem>
+                  <MenuItem data-testid="repeat-type-weekly" value="weekly">
+                    매주
+                  </MenuItem>
+                  <MenuItem data-testid="repeat-type-monthly" value="monthly">
+                    매월
+                  </MenuItem>
+                  <MenuItem data-testid="repeat-type-yearly" value="yearly">
+                    매년
+                  </MenuItem>
                 </Select>
               </FormControl>
               <Stack direction="row" spacing={2}>
                 <FormControl fullWidth>
                   <FormLabel>반복 간격</FormLabel>
                   <TextField
+                    data-testid="repeat-interval-input"
                     size="small"
                     type="number"
                     value={repeatInterval}
@@ -535,6 +550,7 @@ function App() {
                 <FormControl fullWidth>
                   <FormLabel>반복 종료일</FormLabel>
                   <TextField
+                    data-testid="repeat-end-date-input"
                     size="small"
                     type="date"
                     value={repeatEndDate}
@@ -612,7 +628,7 @@ function App() {
                         <Notifications color="error" />
                       )}
                       {event.repeat?.type && event.repeat.type !== 'none' && (
-                        <RepeatIcon size={14} color="#666" />
+                        <RepeatIcon data-testid="repeat-icon" size={14} color="#666" />
                       )}
                       <Typography
                         fontWeight={notifiedEvents.includes(event.id as string) ? 'bold' : 'normal'}
@@ -682,6 +698,7 @@ function App() {
         <DialogActions>
           <Button onClick={() => setIsOverlapDialogOpen(false)}>취소</Button>
           <Button
+            data-testid="overlap-continue-button"
             color="error"
             onClick={() => {
               setIsOverlapDialogOpen(false);
