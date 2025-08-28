@@ -153,6 +153,13 @@ function App() {
     // 반복 일정인 경우 확장된 이벤트들을 생성
     if (isRepeating && repeatType !== 'none') {
       try {
+        console.log('Creating recurring event with:', {
+          startDate: date,
+          endDate: repeatEndDate,
+          repeatType,
+          interval: repeatInterval,
+        });
+
         const expandedEvents = expandRecurringEvent(eventData);
         console.log('Expanded events:', expandedEvents);
 
